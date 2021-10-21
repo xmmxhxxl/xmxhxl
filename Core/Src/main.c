@@ -118,6 +118,7 @@ int main(void)
 //		  if(pwm==10)
 //			  dir = 1;
 //	  }
+	  // 串口驱动
 	  if(mode=='1'){
 		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,25);
 		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,0);
