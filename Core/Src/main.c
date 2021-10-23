@@ -25,7 +25,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+void Servo_Control(uint16_t angle){
+	float temp;
+	temp = (1.0 / 9.0) * angle + 5.0; // 占空比 = 1/9 * 角度 +5
+	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,(uint16_t)temp);
+}
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,8 +60,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t RxBuffer[12];
-uint8_t mode;
+uint8_t RxBuffer[1];
+uint8_t mode,dir,count;
 /* USER CODE END 0 */
 
 /**
@@ -90,9 +94,10 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
-  /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-  HAL_UART_Receive_IT(&huart1,RxBuffer,2);
+  HAL_UART_Receive_IT(&huart1, RxBuffer, 1);
+  /* USER CODE BEGIN 2 */
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,31 +107,32 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	  static uint16_t pwm = 10;
-//	  static uint16_t dir = 1;
-//	  if(dir){
-//		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,pwm);
-//		  HAL_Delay(100);
-//			  pwm ++;
-//			  if(pwm>25)
-//				  dir = 0;
-//	  }
-//	  else{
-//		  pwm--;
-//		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,pwm);
-//		  HAL_Delay(100);
-//		  if(pwm==10)
-//			  dir = 1;
-//	  }
-	  // 串口驱动
-	  if(mode=='1'){
-		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,25);
-		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,0);
+	  if(mode == '1'){
+		  Servo_Control(150);
+		  HAL_Delay(2000);
+		  Servo_Control(0);
+		  mode = '0';
 	  }
-	  if(mode=='0'){
-		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,5);
-		  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,0);
-	  }
+//	     Servo_Control(10);
+//	    HAL_Delay(100);
+//	    Servo_Control(20);
+//	    HAL_Delay(100);
+//	    Servo_Control(30);
+//	    HAL_Delay(100);
+//	    Servo_Control(40);
+//	    HAL_Delay(100);
+//	    Servo_Control(50);
+//	    HAL_Delay(100);
+//	    Servo_Control(60);
+//	    HAL_Delay(100);
+//	    Servo_Control(70);
+//	    HAL_Delay(100);
+//	    Servo_Control(80);
+//	    HAL_Delay(100);
+//	    Servo_Control(90);
+//	    HAL_Delay(100);
+//	    Servo_Control(0);
+//	    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -170,10 +176,10 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_UART_Receive_IT(&huart1, RxBuffer, 1);
 	mode = RxBuffer[0];
+	HAL_UART_Transmit(&huart1,RxBuffer,3,100);
 }
 /* USER CODE END 4 */
 
