@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<project name="WG-Cable" default="build" basedir=".">
+<include file="C:\java\ant\autobuildscripts\autobuild.xml"/>
+<property name="WorkSpace" value="${jenkinsbase}\WGCabletest\workspace" />
+<property name="testsvndir" value="${testsvnurl}/01出入控制类/门禁读卡器/WG-Cable" />
+  <property name="targetname" value="V1.0.0.40RC" />
+    <property name="firmware_version" value="V1.0.0.01" />
+
+<target name="WG-Cable">
+    <delete >
+	    <fileset dir="${WorkSpace}\MDK-ARM\output">
+		    <include name="*.hex" />
+	    </fileset>
+    </delete>
+<echo message="build WG-Cable!" level="info"/>
+    <exec  executable="${uv4exec}" failonerror="false">
+            <arg line="-r ${WorkSpace}\MDK-ARM\WGCable.uvproj"/>
+    </exec>
+    <echo message="build WG-Cable successfully!" level="info"/>
+    <svn refid="svn.setting1">
+	
+    </svn>
+    <echo message="delete svn firmware tag successfully!" level="info"/>				
+    <svn refid="svn.setting2">
+ 	<import path="${WorkSpace}\MDK-ARM\output\WGCable_ST.hex" 
+ 		url="${testsvndir}/WGCable_ST-${firmware_version}.hex" message="test"/>
+    </svn>
+    <echo message="Import firmware to svn successfully!" level="info"/>
+</target>
+	
+</project>
